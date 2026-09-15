@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ajuda — modelo analítico × numérico de solidificação do Al</title>
+  <style>
+    :root { color-scheme: light; --ink:#172033; --blue:#1769d2; --paper:#fff;
+      --soft:#eef4fb; --line:#cad7e6; --code:#102033; }
+    body { margin:0; background:#f4f7fa; color:var(--ink); font:16px/1.55 system-ui,Segoe UI,Arial,sans-serif; }
+    main { max-width:980px; margin:32px auto; padding:34px 42px; background:var(--paper);
+      border:1px solid var(--line); border-radius:14px; box-shadow:0 8px 30px #17304d16; }
+    h1 { margin:0 0 8px; font-size:2rem; } h2 { margin-top:2rem; color:#174f91; }
+    h3 { margin-top:1.4rem; } p, li { max-width:88ch; }
+    code { background:#eaf0f6; padding:.12rem .35rem; border-radius:4px; }
+    pre { overflow:auto; padding:14px 16px; background:var(--code); color:#edf6ff;
+      border-radius:8px; white-space:pre-wrap; }
+    pre code { padding:0; background:transparent; }
+    table { width:100%; border-collapse:collapse; margin:12px 0; }
+    th, td { padding:9px 11px; border:1px solid var(--line); text-align:left; vertical-align:top; }
+    th { background:var(--soft); } .note { padding:12px 15px; border-left:4px solid var(--blue); background:var(--soft); }
+    .ok { color:#176b3a; font-weight:650; }
+  </style>
+</head>
+<body><main>
+  <div class="note"><strong>Pacote do artigo.</strong> O manuscrito editável está em
+    <code>publication\Corrected_Two_Coefficient_Solidification_Article.docx</code>.
+    Para regenerar os dados, as cinco figuras solicitadas e todas as tabelas do artigo, execute
+    <code>py -3.11 publication_studies.py</code>. As instruções completas e a rastreabilidade
+    estão em <code>publication\README.md</code>.</div>
+  <h1>Modelo de solidificação do alumínio puro</h1>
+  <p>Guia de execução da comparação <strong>analítica × numérica</strong>. A execução normal não
+    desenha curvas experimentais. Os pontos experimentais não entram nas figuras geradas.</p>
+
+  <h2>1. Como executar o analítico e o numérico</h2>
+  <p>Abra o PowerShell na pasta do projeto. As instruções dos dois programas estão reunidas
+    neste arquivo.</p>
+  <h3>Execução pelo programa analítico (recomendada)</h3>
+  <p>Este é o ponto de entrada principal. Ele calcula a solução analítica, chama o modelo
+    numérico e gera somente as comparações analítico × numérico:</p>
+  <pre><code>py -3.11 analytical_model_2024_Al_melt_convection_corrected.py</code></pre>
+  <h3>Execução direta pelo programa numérico</h3>
+  <p>Produz os mesmos PNGs e CSVs, calculando internamente a referência analítica:</p>
+  <pre><code>py -3.11 numerical_stefan_model_pure_al.py</code></pre>
+  <p>Se o comando <code>py</code> não estiver disponível:</p>
+  <pre><code>&amp; "C:\Users\ileao\AppData\Local\Programs\Python\Python311\python.exe" -B analytical_model_2024_Al_melt_convection_corrected.py</code></pre>
+
+  <h2>2. Modelo usado por padrão</h2>
+  <ul>
+    <li><strong>Analítico:</strong> fechamento por condução, com equilíbrio local na interface.</li>
+    <li><strong>Numérico:</strong> volumes finitos–entalpia, com interpolação subcelular de Voller.</li>
+    <li><strong>Coeficiente da coquilha:</strong> <code>h_bar = 4264 W/m²K</code>.</li>
+    <li><strong>Interface:</strong> <code>h_i → infinito</code>; portanto, <code>T_L(s+) = T_F</code> e não existe salto artificial.</li>
+    <li><strong>Malha:</strong> 600 células em 0,30 m (<code>dx = 0,5 mm</code>).</li>
+  </ul>
+  <div class="note"><strong>Interpolação de Voller.</strong> A fração sólida localiza a frente dentro
+    da célula de mudança de fase por <code>s = Σ f_s Δx</code>. O gradiente líquido usa a distância
+    real entre essa posição subcelular e o centro da primeira célula completamente líquida.
+    Assim, a célula isotérmica de fronteira não alarga artificialmente o gradiente.</div>
+  <h3>Verificação numérica alternativa</h3>
+  <p>O parâmetro <code>--sharp-interface</code> seleciona o método ALE de fronteira nítida. Ele
+    resolve separadamente os domínios sólido e líquido e impõe <code>T(s−)=T(s+)=T_F</code> no
+    limite de condução. É útil como auditoria independente do método entalpia–Voller:</p>
+  <pre><code>py -3.11 numerical_stefan_model_pure_al.py --sharp-interface --ns 45 --nl 160</code></pre>
+
+  <h2>3. Parâmetros</h2>
+  <table>
+    <tr><th>Opção</th><th>Função</th><th>Padrão</th></tr>
+    <tr><td><code>--h-bar VALOR</code></td><td>Coeficiente médio na coquilha, usado igualmente nos dois modelos.</td><td>4264</td></tr>
+    <tr><td><code>--t-end VALOR</code></td><td>Tempo final em segundos.</td><td>200</td></tr>
+    <tr><td><code>--length VALOR</code></td><td>Comprimento do domínio numérico em metros.</td><td>0,30</td></tr>
+    <tr><td><code>--nx VALOR</code></td><td>Número de células do método entalpia–Voller.</td><td>600</td></tr>
+    <tr><td><code>--output-dt VALOR</code></td><td>Intervalo de gravação em segundos.</td><td>0,25</td></tr>
+    <tr><td><code>--tc-positions X1 X2 X3 X4 X5 X6</code></td><td>Posições físicas, em metros, dos seis termopares. Devem ser positivas e crescentes.</td><td>0,005 0,010 0,015 0,030 0,050 0,090</td></tr>
+    <tr><td><code>--sharp-interface</code></td><td>Executa a verificação alternativa ALE com fronteira nítida.</td><td>desligada</td></tr>
+    <tr><td><code>--finite-film --h-i VALOR</code></td><td>Diagnóstico com resistência interfacial finita; admite salto de temperatura.</td><td>desligada</td></tr>
+  </table>
+  <p>Exemplo com malha refinada e outro <code>h_bar</code>:</p>
+  <pre><code>py -3.11 analytical_model_2024_Al_melt_convection_corrected.py --h-bar 5000 --nx 900</code></pre>
+  <p>Exemplo alterando o primeiro termopar de 5 mm para 3 mm:</p>
+  <pre><code>py -3.11 analytical_model_2024_Al_melt_convection_corrected.py --tc-positions 0.003 0.010 0.015 0.030 0.050 0.090</code></pre>
+  <p>Quando <code>h_bar</code> é alterado, as duas soluções e todas as figuras são recalculadas automaticamente.</p>
+
+  <h2>4. Figuras e tabelas geradas</h2>
+  <p>Os arquivos são gravados em <code>outputs\numerical_comparison\</code>:</p>
+  <ul>
+    <li><code>Figure_analytical_vs_numerical_cooling_curves.png</code></li>
+    <li><code>Figure_position_vs_time_analytical_vs_numerical.png</code></li>
+    <li><code>Figure_velocity_vs_position_analytical_vs_numerical.png</code></li>
+    <li><code>Figure_thermal_gradient_vs_position_analytical_vs_numerical.png</code></li>
+    <li><code>Figure_cooling_rate_TF_vs_position_analytical_vs_numerical.png</code></li>
+    <li><code>analytical_vs_numerical_comparison.csv</code> — tempo, posição, velocidade, gradientes e temperaturas.</li>
+  </ul>
+
+  <h2>5. Interpretação do gradiente</h2>
+  <p>O gráfico usa o gradiente do lado líquido em <code>s+</code>, em K/mm. A taxa de resfriamento
+    na frente é calculada por <code>|dT_F/dt| = G_L V</code>. A concordância de posição não obriga
+    matematicamente a igualdade exata de gradiente: posição depende da diferença entre os fluxos
+    sólido e líquido no balanço de Stefan. Por isso, o arquivo CSV conserva também grandezas de
+    auditoria quando o método de entalpia é utilizado.</p>
+
+  <h2>6. Dependências</h2>
+  <pre><code>py -3.11 -m pip install numpy scipy matplotlib</code></pre>
+  <p class="ok">Ao término sem erro, o console informa a posição final, os erros de posição e a pasta de saída.</p>
+</main></body></html>

@@ -1,0 +1,7 @@
+metric,value,unit
+rmse_s_mm,0.38236004,mm
+max_abs_s_mm,0.63221324,mm
+final_analytical_mm,140.20285680,mm
+final_numerical_mm,140.19855313,mm
+rmse_T_analytical_vs_numerical_all_probes_C,2.73759848,degC
+rmse_T_analytical_vs_numerical_third_to_sixth_probe_C,2.48730633,degC

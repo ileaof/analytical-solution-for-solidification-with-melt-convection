@@ -1,0 +1,35 @@
+# Python caches and local environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Local manuscript, publication builds, and references
+publication/
+references/
+*.docx
+*.doc
+*.pdf
+~$*
+
+# Proprietary/raw working files and experimental source material
+*.opju
+experimental_*.csv
+analytical_model_2024_Al_melt_convection_dev.py
+melt_convection_validation_metrics.csv
+model_predictions.csv
+Figure_*.jpg
+Figure_*experimental*.png
+*experimental*.png
+outputs/velocidade_posicao/
+
+# Temporary and editor files
+tmp/
+.idea/
+.vscode/
+*.tmp
+*.bak
+*.log
+.DS_Store
+Thumbs.db
