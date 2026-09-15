@@ -6,6 +6,22 @@ reference uses a finite-volume enthalpy formulation with Voller-type subcell
 front interpolation. The default comparison uses the same mold heat-transfer
 coefficient in both models.
 
+## Clone the repository
+
+Using HTTPS:
+
+```powershell
+git clone https://github.com/ileaof/analytical-solution-for-solidification-with-melt-convection.git
+cd analytical-solution-for-solidification-with-melt-convection
+```
+
+Using SSH, if an SSH key is already configured in GitHub:
+
+```powershell
+git clone git@github.com:ileaof/analytical-solution-for-solidification-with-melt-convection.git
+cd analytical-solution-for-solidification-with-melt-convection
+```
+
 ## Main programs
 
 - `analytical_model_2024_Al_melt_convection_corrected.py`: main analytical
@@ -66,4 +82,26 @@ The tracked baseline results include:
 The manuscript, its DOCX versions, publication build artifacts, reference PDFs,
 Origin project files, and experimental source material are intentionally ignored
 by Git and remain only in the local working directory.
+
+## Published paper
+
+The published article is available locally as `ajeassp.2026.88.116.pdf`. The PDF
+is intentionally not tracked in this repository; use the publisher links below
+to access and cite the version of record.
+
+> Santos Júnior, G. E. M., Rocha, F. S., Silva, A. B. S., Carmo, D. A. R.,
+> Silva, M. O., & Ferreira, I. L. (2026). On a Novel Closed-Form Analytical
+> Solution for Unsteady Solidification: Theory and Application. *American
+> Journal of Engineering and Applied Sciences*, 19(1), 88-116.
+> https://doi.org/10.3844/ajeassp.2026.88.116
+
+- [Article page](https://u.thescipub.com/abstract/ajeassp.2026.88.116)
+- [Publisher PDF](https://thescipub.com/pdf/ajeassp.2026.88.116.pdf)
+
+## License
+
+The source code and repository documentation are distributed under the
+[MIT License](LICENSE). The published paper is a separate scholarly work and is
+distributed by the publisher under the Creative Commons Attribution license
+(CC BY); the MIT license does not replace the article's publication license.
 
